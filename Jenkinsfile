@@ -7,7 +7,6 @@ pipeline {
   environment {
     DOCKER_IMAGE = 'amrutapage/simplehello'
     DOCKER_TAG = "${BUILD_NUMBER}"
-    DOCKER_CREDS = credentials('dockerhub-credentials')
   }
 
   stages {
