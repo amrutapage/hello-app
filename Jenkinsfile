@@ -38,9 +38,9 @@ pipeline {
 
     stage('Docker Push') {
       steps {
-        sh "echo ${DOCKER_CREDS_PSW} | docker login -u ${DOCKER_CREDS_USR} --password-stdin"
-        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
-        sh "docker push ${DOCKER_IMAGE}:latest"
+        bat "echo ${DOCKER_CREDS_PSW} | docker login -u ${DOCKER_CREDS_USR} --password-stdin"
+        bat "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+        bat "docker push ${DOCKER_IMAGE}:latest"
       }
     }
 
