@@ -1,6 +1,9 @@
 pipeline {
   agent any
-
+  tools {
+        maven 'Maven3'
+        jdk 'JDK17'
+    }
   environment {
     DOCKER_IMAGE = 'amrutapage/simplehello'
     DOCKER_TAG = "${BUILD_NUMBER}"
@@ -17,7 +20,7 @@ pipeline {
 
     stage('Build & Test') {
       steps {
-        sh 'mvn clean test package'
+        bat 'mvn clean test'
       }
       post {
         always {
@@ -28,8 +31,8 @@ pipeline {
 
     stage('Docker Build') {
       steps {
-        sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-        sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
+        bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+        bat "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
       }
     }
 
@@ -43,9 +46,10 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        sh "docker stop springboot-app || true"
-        sh "docker rm springboot-app || true"
-        sh "docker run -d -p 8080:8080 --name springboot-app ${DOCKER_IMAGE}:latest"
+        
+        bat "docker stop springboot-app || true"
+        bat "docker rm springboot-app || true"
+        bat "docker run -d -p 8080:8080 --name springboot-app ${DOCKER_IMAGE}:latest"
       }
     }
   }
