@@ -36,19 +36,21 @@ pipeline {
     }
 
     stage('Docker Push') {
-		steps {
-			withCredentials([usernamePassword(
-				credentialsId: 'dockerhub-credentials',
-				usernameVariable: 'DOCKER_USER',
-				passwordVariable: 'DOCKER_PASS'
-			)]) {
-				bat """
-				echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-				docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
-				docker push ${DOCKER_IMAGE}:latest
-				"""
-			}
-		}
+      steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'dockerhub-credentials',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS'
+        )]) {
+
+            powershell '''
+            $pass = "$env:DOCKER_PASS"
+            $pass | docker login -u $env:DOCKER_USER --password-stdin
+            docker push ${env:DOCKER_IMAGE}:${env:DOCKER_TAG}
+            docker push ${env:DOCKER_IMAGE}:latest
+            '''
+        }
+      }
 	}
 
     stage('Deploy') {
