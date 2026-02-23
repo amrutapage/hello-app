@@ -7,6 +7,7 @@ pipeline {
   environment {
     DOCKER_IMAGE = 'amrutapage/simplehello'
     DOCKER_TAG = "${BUILD_NUMBER}"
+	DOCKER_CREDS = credentials('dockerhub-credentials')
   }
 
   stages {
@@ -42,13 +43,11 @@ pipeline {
             usernameVariable: 'DOCKER_USER',
             passwordVariable: 'DOCKER_PASS'
         )]) {
-
-            powershell '''
-            $pass = "$env:DOCKER_PASS"
-            $pass | docker login -u $env:DOCKER_USER --password-stdin
-            docker push ${env:DOCKER_IMAGE}:${env:DOCKER_TAG}
-            docker push ${env:DOCKER_IMAGE}:latest
-            '''
+          bat '''
+          echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+          docker push %DOCKER_IMAGE%:%DOCKER_TAG%
+          docker push %DOCKER_IMAGE%:latest
+          '''
         }
       }
 	}
@@ -56,9 +55,9 @@ pipeline {
     stage('Deploy') {
       steps {
         
-        bat "docker stop springboot-app || true"
-        bat "docker rm springboot-app || true"
-        bat "docker run -d -p 8080:8080 --name springboot-app ${DOCKER_IMAGE}:latest"
+        bat "docker stop springboot-app || exit 0"
+        bat "docker rm springboot-app || exit 0"
+        bat "docker run -d -p 8080:8080 --name springboot-app %DOCKER_IMAGE%:latest"
       }
     }
   }
