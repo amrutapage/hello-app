@@ -42,12 +42,12 @@ pipeline {
             credentialsId: 'dockerhub-credentials',
             usernameVariable: 'DOCKER_USER',
             passwordVariable: 'DOCKER_PASS'
-        )]) {
-          bat '''
-          echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-          docker push %DOCKER_IMAGE%:%DOCKER_TAG%
-          docker push %DOCKER_IMAGE%:latest
-          '''
+        )]){
+            bat """
+            docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+            docker push %DOCKER_IMAGE%:%DOCKER_TAG%
+            docker push %DOCKER_IMAGE%:latest
+            """
         }
       }
 	}
